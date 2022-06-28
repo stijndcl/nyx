@@ -50,8 +50,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-yarn-
             - run: yarn install
-            - run: npx playwright install-deps
-            - run: yarn test
+            - run: npx playwright install && yarn test
 
     lint:
         needs: [test]
