@@ -1,0 +1,122 @@
+name: CI/CD
+
+on:
+    pull_request:
+    push:
+        branches:
+            - master
+            - develop
+
+jobs:
+    dependencies:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+            - name: Get Yarn cache directory
+              id: yarn-cache
+              run: |
+                  echo "::set-output name=dir::$(yarn cache dir)"
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: yarn install
+
+    test:
+        needs: [dependencies]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+            - name: Get Yarn cache directory
+              id: yarn-cache
+              run: |
+                  echo "::set-output name=dir::$(yarn cache dir)"
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: yarn install
+            - run: yarn test
+
+    lint:
+        needs: [test]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+            - name: Get Yarn cache directory
+              id: yarn-cache
+              run: |
+                  echo "::set-output name=dir::$(yarn cache dir)"
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: yarn install
+            - run: yarn lint
+
+    style:
+        needs: [test]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+            - name: Get Yarn cache directory
+              id: yarn-cache
+              run: |
+                  echo "::set-output name=dir::$(yarn cache dir)"
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: yarn install
+            - run: yarn prettier -c src
+
+    build:
+        needs: [lint, style]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: Install Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+            - name: Get Yarn cache directory
+              id: yarn-cache
+              run: |
+                  echo "::set-output name=dir::$(yarn cache dir)"
+            - name: Cache dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.yarn-cache.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+            - run: yarn install
+            - run: yarn build
